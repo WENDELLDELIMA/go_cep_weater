@@ -49,11 +49,11 @@ gcloud run deploy cep-weather \
 
 # Após o deploy, o comando imprime a URL pública (Cloud Run URL)
 # Teste:
-curl "https://SEU_ENDPOINT.run.app/weather?cep=01001000"
+curl "https://cep-weather-619173290419.southamerica-east1.run.app/weather?cep=01001000"
 ```
 
 > Também é possível construir a imagem Docker e publicar no Artifact Registry, depois `gcloud run deploy --image ...`.
 
 ## Observações
 - `F = C * 1,8 + 32`
-- `K = C + 273` (conforme o enunciado)
+- `K = C + 273` 
