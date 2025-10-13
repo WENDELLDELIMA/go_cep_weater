@@ -1,0 +1,8 @@
+services:
+  api:
+    build: .
+    environment:
+      - PORT=8080
+      - WEATHERAPI_KEY=${WEATHERAPI_KEY}
+    ports:
+      - "8080:8080"
