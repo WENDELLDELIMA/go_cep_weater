@@ -57,7 +57,7 @@ func (s *Server) HandleWeather(w http.ResponseWriter, r *http.Request) {
 
 	cTemp, err := s.weatherSvc.CurrentTempC(r.Context(), q)
 	if err != nil {
-		http.Error(w, "weather provider error", http.StatusBadGateway)
+		http.Error(w, "Não foi possível obter a temperatura atual, tente outro CEP", http.StatusBadGateway)
 		return
 	}
 
