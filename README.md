@@ -20,14 +20,14 @@ Serviço em Go que recebe um **CEP (8 dígitos)**, resolve a **cidade/UF** via *
 export WEATHERAPI_KEY=SEU_TOKEN_WEATHERAPI
 docker compose up --build
 # Teste
-curl "http://localhost:8080/weather?cep=01001000"
+curl "http://localhost:8080/weather?cep=08583450"
 ```
 
 ## Execução local (sem Docker)
 ```bash
 export WEATHERAPI_KEY=SEU_TOKEN_WEATHERAPI
 go run ./cmd/server
-curl "http://localhost:8080/weather?cep=01001000"
+curl "http://localhost:8080/weather?cep=08583450"
 ```
 
 ## Testes automatizados
@@ -49,7 +49,7 @@ gcloud run deploy cep-weather \
 
 # Após o deploy, o comando imprime a URL pública (Cloud Run URL)
 # Teste:
-curl "https://cep-weather-619173290419.southamerica-east1.run.app/weather?cep=01001000"
+curl "https://cep-weather-619173290419.southamerica-east1.run.app/weather?cep=08583450"
 ```
 
 > Também é possível construir a imagem Docker e publicar no Artifact Registry, depois `gcloud run deploy --image ...`.
