@@ -51,6 +51,36 @@ func TestWeather_Success(t *testing.T) {
 	}
 }
 
+func TestWeather_CEPWithHyphen(t *testing.T) {
+	// Mock ViaCEP
+	via := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"localidade":"São Paulo","uf":"SP"}`))
+	}))
+	defer via.Close()
+
+	// Mock WeatherAPI
+	weather := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"current":{"temp_c": 25.0}}`))
+	}))
+	defer weather.Close()
+
+	os.Setenv("VIA_CEP_BASE", via.URL)
+	os.Setenv("WEATHERAPI_BASE", weather.URL)
+	os.Setenv("WEATHERAPI_KEY", "dummy")
+
+	s := server.New()
+	req := httptest.NewRequest(http.MethodGet, "/weather?cep=01001-000", nil)
+	w := httptest.NewRecorder()
+
+	s.HandleWeather(w, req)
+	resp := w.Result()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200 for CEP with hyphen, got %d", resp.StatusCode)
+	}
+}
+
 func TestWeather_InvalidCEP(t *testing.T) {
 	s := server.New()
 	req := httptest.NewRequest(http.MethodGet, "/weather?cep=ABC", nil)

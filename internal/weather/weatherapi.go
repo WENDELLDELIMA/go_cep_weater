@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -31,8 +32,8 @@ type currentResp struct {
 }
 
 func (s *Service) CurrentTempC(ctx context.Context, query string) (float64, error) {
-	url := fmt.Sprintf("%s/current.json?key=%s&q=%s", s.baseURL, s.apiKey, query)
-	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	reqURL := fmt.Sprintf("%s/current.json?key=%s&q=%s", s.baseURL, s.apiKey, url.QueryEscape(query))
+	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	resp, err := s.client.Do(req)
 	if err != nil {
 		return 0, err

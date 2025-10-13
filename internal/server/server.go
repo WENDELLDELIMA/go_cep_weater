@@ -32,7 +32,7 @@ func New() *Server {
 	}
 }
 
-var reCEP = regexp.MustCompile(`^\d{8}$`)
+var reCEP = regexp.MustCompile(`^\d{5}-?\d{3}$`)
 
 func (s *Server) HandleWeather(w http.ResponseWriter, r *http.Request) {
 	cepParam := r.URL.Query().Get("cep")
@@ -41,7 +41,10 @@ func (s *Server) HandleWeather(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loc, err := s.cepSvc.Lookup(r.Context(), cepParam)
+	// Normalize CEP by removing hyphen
+	normalizedCEP := strings.ReplaceAll(cepParam, "-", "")
+
+	loc, err := s.cepSvc.Lookup(r.Context(), normalizedCEP)
 	if err != nil {
 		if errors.Is(err, cep.ErrNotFound) {
 			http.Error(w, "can not find zipcode", http.StatusNotFound)
@@ -53,11 +56,10 @@ func (s *Server) HandleWeather(w http.ResponseWriter, r *http.Request) {
 
 	// Build query for WeatherAPI
 	q := fmt.Sprintf("%s,%s,Brazil", loc.City, loc.State)
-	q = strings.ReplaceAll(q, " ", "%20")
-
+	
 	cTemp, err := s.weatherSvc.CurrentTempC(r.Context(), q)
 	if err != nil {
-		http.Error(w, "Não foi possível obter a temperatura atual, tente outro CEP", http.StatusBadGateway)
+		http.Error(w, fmt.Sprintf("weather provider error: %v", err), http.StatusBadGateway)
 		return
 	}
 
