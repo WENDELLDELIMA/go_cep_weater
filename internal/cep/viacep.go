@@ -18,7 +18,7 @@ type Service struct {
 
 func NewService(c *http.Client, base string) *Service {
 	if c == nil {
-		c = &http.Client{ Timeout: 10 * time.Second }
+		c = &http.Client{Timeout: 10 * time.Second}
 	}
 	if base == "" {
 		base = "https://viacep.com.br"
@@ -29,7 +29,7 @@ func NewService(c *http.Client, base string) *Service {
 type viaCepResp struct {
 	Localidade string `json:"localidade"`
 	UF         string `json:"uf"`
-	Erro       bool   `json:"erro"`
+	Erro       string `json:"erro"` // ViaCEP returns "true" as string
 }
 
 type Location struct {
@@ -57,7 +57,7 @@ func (s *Service) Lookup(ctx context.Context, cep string) (Location, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		return Location{}, err
 	}
-	if data.Erro || data.Localidade == "" || data.UF == "" {
+	if data.Erro == "true" || data.Localidade == "" || data.UF == "" {
 		return Location{}, ErrNotFound
 	}
 	return Location{City: data.Localidade, State: data.UF}, nil
